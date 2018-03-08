@@ -7,10 +7,9 @@ import time
 genome=open('/home/malab19/1.9TB_Volume_mounted/whm_data/tair10/tair10.fa')
 orf_stats=pandas.read_csv('/home/malab19/1.9TB_Volume_mounted/whm_data/tair10/orf_stats_new2.csv')
 # coords=orf_stats["orf_coords"]这里的coords对象是series对象
-
 chr=orf_stats.iloc[:,[1]]#chr对象是dataframe对象，可以用for循环
 list1=[]
-for i in chr["orf_coords"]:
+for i in chr["orf_coords"]:              #如果前面写成chr=orf_stats.iloc[:,1]，则这句写成for i in chr：即可
     chromsome=str(i).split(':')[0]
     list1.append(chromsome)
 all_chr = set(list1)#去除重复
@@ -32,7 +31,7 @@ sequence={'chr1':'','chr2':'','chr3':'','chr4':'','chr5':'','chrMt':'','chrPt':'
 title_list=[1514792]#这是拟南芥基因组fasta文件的行数
 count=0
 genome_list=genome.readlines()
-for index,item in enumerate(genome_list):
+for index,item in enumerate(genome_list):#enumerate方法操作列表和字符串可以获得索引和内容，用于for循环更加美观
     for i in all_chr:
         if item.startswith('>'+i):
             count+=1
@@ -48,12 +47,11 @@ def reverse_complement(chr,start,stop):
     seq=''
     for base in sequence[chr][start-1:stop]:
         seq=seq+ntComlement[base]
-    revSeq=list(reversed(seq))
+    revSeq=list(reversed(seq))#reversed返回值是一个迭代器
     return ''.join(revSeq)
 
-print(orf_stats.iloc[0,2].split(':')[0])
-col_num = int(orf_stats.describe().iloc[0,0])#这个方法用来获得dataframe的行数
-for line in range(col_num):
+row_num = int(orf_stats.describe().iloc[0,0])#这个方法用来获得dataframe的行数
+for line in range(row_num):
     if orf_stats.iloc[line,1].split(':')[2] == '+':#正义链
         outf.write('>{0}_{1}_{2}\n{3}\n'.format(orf_stats.iloc[line,1].split(':')[0],orf_stats.iloc[line,0].split(':')[1],orf_stats.iloc[line,4],\
         sequence[orf_stats.iloc[line,1].split(':')[0]][int(re.split(':|-',orf_stats.iloc[line,1])[1])-1:int(re.split(':|-',orf_stats.iloc[line,1])[2])]))
